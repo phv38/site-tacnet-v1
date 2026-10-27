@@ -10,15 +10,89 @@ const io = new IntersectionObserver(es => es.forEach(e => {
 }), { threshold: .12 });
 document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
-// Ouvre le client mail. Remplacez par Formspree/Netlify Forms pour un envoi direct.
-const f = document.getElementById('contact-form');
-if (f) f.addEventListener('submit', e => {
-  e.preventDefault();
-  const d = new FormData(f);
-  const body = `Nom : ${d.get('nom')}\nSociété : ${d.get('societe')}\nTéléphone : ${d.get('tel')}\nEmail : ${d.get('email')}\n\n${d.get('message')}`;
-  location.href = `mailto:tacnet-vidier@outlook.fr?subject=${encodeURIComponent('Demande de devis - ' + d.get('nom'))}&body=${encodeURIComponent(body)}`;
-  document.getElementById('form-ok').hidden = false;
-});
+const formspreeEndpoint = 'https://formspree.io/f/mdeegyeq';
+
+const setupFormspreeForm = form => {
+  const submitButton = form.querySelector('[type="submit"]');
+  const buttonLabel = submitButton.querySelector('.button-label');
+  const success = form.querySelector('.form-success');
+  const error = form.querySelector('.form-error');
+  let submitting = false;
+  let sent = false;
+
+  form.addEventListener('input', () => {
+    error.hidden = true;
+    if (!sent) return;
+    sent = false;
+    submitButton.disabled = false;
+    success.hidden = true;
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (submitting || sent || !form.reportValidity()) return;
+
+    if (form.querySelector('[name="_gotcha"]').value) {
+      form.reset();
+      success.hidden = true;
+      error.hidden = true;
+      return;
+    }
+
+    submitting = true;
+    submitButton.disabled = true;
+    submitButton.classList.add('is-loading');
+    form.setAttribute('aria-busy', 'true');
+    buttonLabel.textContent = 'Envoi en cours…';
+    success.hidden = true;
+    error.hidden = true;
+
+    const data = new FormData(form);
+    data.set('_subject', form.id === 'estimator' ? 'Demande d’estimation de projet TACNET' : 'Contact / demande de devis TACNET');
+
+    if (form.id === 'estimator') {
+      const selectedProject = form.querySelector('[name="project"]:checked');
+      const selectedPages = form.querySelector('[name="pages"]:checked');
+      const selectedFeatures = [...form.querySelectorAll('[name="feature"]:checked')]
+        .map(input => input.closest('label').querySelector('span').textContent.trim());
+
+      data.set('Type de projet', selectedProject.closest('label').querySelector('span').textContent.trim());
+      data.set('Nombre de pages', selectedPages.closest('label').querySelector('span').textContent.trim());
+      data.set('Fonctionnalités sélectionnées', selectedFeatures.length ? selectedFeatures.join(', ') : 'Aucune sélection');
+      data.set('Estimation affichée - Budget', document.getElementById('estimate-budget').textContent.trim());
+      data.set('Estimation affichée - Complexité', document.getElementById('estimate-complexity').textContent.trim());
+      data.set('Estimation affichée - Délai', document.getElementById('estimate-time').textContent.trim());
+    }
+
+    try {
+      const response = await fetch(formspreeEndpoint, {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' }
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        const details = result?.errors?.map(item => item.message).filter(Boolean).join(' ');
+        throw new Error(details || `Formspree a répondu avec le statut ${response.status}.`);
+      }
+
+      success.hidden = false;
+      sent = true;
+    } catch (requestError) {
+      console.error('Échec de l’envoi Formspree :', requestError);
+      error.hidden = false;
+      submitButton.disabled = false;
+    } finally {
+      submitting = false;
+      form.removeAttribute('aria-busy');
+      submitButton.classList.remove('is-loading');
+      buttonLabel.textContent = form.id === 'estimator' ? 'Envoyer ma demande d’estimation' : 'Envoyer ma demande';
+    }
+  });
+};
+
+document.querySelectorAll('form[data-formspree]').forEach(setupFormspreeForm);
 
 const estimator = document.getElementById('estimator');
 if (estimator) {
@@ -85,5 +159,8 @@ if (estimator) {
   };
 
   estimator.addEventListener('change', updateEstimate);
+  estimator.addEventListener('input', event => {
+    if (event.target.matches('input[name="project"], input[name="pages"], input[name="feature"]')) updateEstimate();
+  });
   updateEstimate();
 }

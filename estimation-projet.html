@@ -30,7 +30,7 @@
 </div></section>
 
 <section><div class="wrap estimator-layout">
-<form class="estimator card" id="estimator">
+<form class="estimator card" id="estimator" data-formspree method="POST">
 <fieldset>
 <legend>Type de projet</legend>
 <div class="choice-grid">
@@ -65,6 +65,22 @@
 <label class="feature"><input type="checkbox" name="feature" value="custom"><span>Développement spécifique</span></label>
 </div>
 </fieldset>
+<fieldset>
+<legend>Vos coordonnées</legend>
+<div class="form-honeypot" aria-hidden="true"><label for="estimate-website">Ne pas remplir ce champ<input id="estimate-website" type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+<div class="frow">
+<label>Nom<input name="Nom" required autocomplete="name"></label>
+<label>Entreprise<input name="Entreprise" autocomplete="organization"></label>
+</div>
+<div class="frow">
+<label>Téléphone<input name="Téléphone" type="tel" autocomplete="tel"></label>
+<label>Email<input name="email" type="email" required autocomplete="email"></label>
+</div>
+<label>Message<textarea name="Message" required placeholder="Parlez-moi brièvement de votre besoin."></textarea></label>
+</fieldset>
+<button class="btn primary form-submit" type="submit"><span class="button-label">Envoyer ma demande d'estimation</span><span class="button-spinner" aria-hidden="true"></span></button>
+<p class="form-status form-success" role="status" aria-live="polite" hidden>Merci pour votre message.<br><br>Je reviendrai vers vous dans les meilleurs délais afin d'échanger sur votre projet.<br><br>TacNet<br><a href="tel:+33632003817">06 32 00 38 17</a><br><a href="mailto:tacnet-vidier@outlook.fr">tacnet-vidier@outlook.fr</a></p>
+<p class="form-status form-error" role="alert" hidden>L'envoi n'a pas abouti. Vérifiez votre connexion et réessayez, ou contactez-moi par téléphone ou e-mail.</p>
 </form>
 
 <aside class="estimate-panel card" aria-live="polite" aria-atomic="true">

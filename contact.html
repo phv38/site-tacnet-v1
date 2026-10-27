@@ -32,18 +32,20 @@
 <section><div class="wrap split" style="align-items:start">
 <div class="rv">
 <p class="lead" style="margin-bottom:20px">Chaque projet étant différent, je privilégie avant tout l'échange afin de comprendre vos besoins et vous proposer une solution adaptée.</p>
-<form id="contact-form">
+<form id="contact-form" data-formspree method="POST">
+<div class="form-honeypot" aria-hidden="true"><label for="contact-website">Ne pas remplir ce champ<input id="contact-website" type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
 <div class="frow">
-<label>Nom<input name="nom" required autocomplete="name"></label>
-<label>Société<input name="societe" autocomplete="organization"></label>
+<label>Nom<input name="Nom" required autocomplete="name"></label>
+<label>Entreprise<input name="Entreprise" autocomplete="organization"></label>
 </div>
 <div class="frow">
-<label>Téléphone<input name="tel" type="tel" autocomplete="tel"></label>
+<label>Téléphone<input name="Téléphone" type="tel" autocomplete="tel"></label>
 <label>Email<input name="email" type="email" required autocomplete="email"></label>
 </div>
-<label>Message<textarea name="message" required></textarea></label>
-<button class="btn primary" type="submit">Envoyer ma demande</button>
-<p class="note" id="form-ok" hidden>Votre application de messagerie s'ouvre pour finaliser l'envoi.</p>
+<label>Message<textarea name="Message" required></textarea></label>
+<button class="btn primary form-submit" type="submit"><span class="button-label">Envoyer ma demande</span><span class="button-spinner" aria-hidden="true"></span></button>
+<p class="form-status form-success" role="status" aria-live="polite" hidden>Merci pour votre message.<br><br>Je reviendrai vers vous dans les meilleurs délais afin d'échanger sur votre projet.<br><br>TacNet<br><a href="tel:+33632003817">06 32 00 38 17</a><br><a href="mailto:tacnet-vidier@outlook.fr">tacnet-vidier@outlook.fr</a></p>
+<p class="form-status form-error" role="alert" hidden>L'envoi n'a pas abouti. Vérifiez votre connexion et réessayez, ou contactez-moi par téléphone ou e-mail.</p>
 </form>
 </div>
 <div class="rv">
